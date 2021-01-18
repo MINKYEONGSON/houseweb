@@ -18,9 +18,11 @@ class Apply(models.Model):
     vote_tk = models.DateField(null=True, verbose_name='특공(해당)')
     vote_1 = models.DateField(null=True, verbose_name='1순위(해당)')
     vote_2 = models.DateField(null=True, verbose_name='2순위(해당)')
+    vote_n = models.DateField(null=True, verbose_name='무순위')
+    url = models.URLField(null=True, blank=True)
 
 
 class ApplyHomeType(models.Model):
     apply = models.ForeignKey(Apply, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
-    price = models.IntegerField()
+    price = models.IntegerField(null=True)

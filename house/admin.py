@@ -11,6 +11,12 @@ class ApplyAdmin(admin.ModelAdmin):
                     'apply_home_type_set_30_str', 'apply_home_type_set_big_str']
     list_filter = ['site', 'type1', 'type2']
 
+    # @staticmethod
+    # def name_str(self):
+    #     data = self.name
+    #
+    #     return self.name +
+
     @staticmethod
     def home_count_str(self):
         return self.home_count + '세대'
@@ -30,17 +36,18 @@ class ApplyAdmin(admin.ModelAdmin):
     def apply_home_type_set_10_str(self):
         data = ''
         for home in list(self.applyhometype_set.all()):
-            tmp = str(round(home.price / 10000, 1)) + '억'
-            name = ''
-            tmp1 = home.name.replace(' ', '')
-            for index in range(len(tmp1), 1, -1):
-                try:
-                    name = float(tmp1[:index])
-                    break
-                except:
-                    pass
-            if int(name * 0.3025) >= 10 and int(name * 0.3025) < 20:
-                data += '[%s평/%s형] %s<br/>' % (int(name * 0.3025), home.name, tmp)
+            if home.price is not None:
+                tmp = str(round(home.price / 10000, 1)) + '억'
+                name = ''
+                tmp1 = home.name.replace(' ', '')
+                for index in range(len(tmp1), 1, -1):
+                    try:
+                        name = float(tmp1[:index])
+                        break
+                    except:
+                        pass
+                if int(name * 0.3025) >= 10 and int(name * 0.3025) < 20:
+                    data += '[%s평/%s형] %s<br/>' % (int(name * 0.3025), home.name, tmp)
         return mark_safe('<pre>' + data + '</pre>')
 
     apply_home_type_set_10_str.verbose_name = '10평대'
@@ -49,49 +56,52 @@ class ApplyAdmin(admin.ModelAdmin):
     def apply_home_type_set_20_str(self):
         data = ''
         for home in list(self.applyhometype_set.all()):
-            tmp = str(round(home.price / 10000, 1)) + '억'
-            name = ''
-            tmp1 = home.name.replace(' ', '')
-            for index in range(len(tmp1), 1, -1):
-                try:
-                    name = float(tmp1[:index])
-                    break
-                except:
-                    pass
-            if int(name * 0.3025) >= 20 and int(name * 0.3025) < 30:
-                data += '[%s평/%s형] %s<br/>' % (int(name * 0.3025), home.name, tmp)
+            if home.price is not None:
+                tmp = str(round(home.price / 10000, 1)) + '억'
+                name = ''
+                tmp1 = home.name.replace(' ', '')
+                for index in range(len(tmp1), 1, -1):
+                    try:
+                        name = float(tmp1[:index])
+                        break
+                    except:
+                        pass
+                if int(name * 0.3025) >= 20 and int(name * 0.3025) < 30:
+                    data += '[%s평/%s형] %s<br/>' % (int(name * 0.3025), home.name, tmp)
         return mark_safe('<pre>' + data + '</pre>')
 
     @staticmethod
     def apply_home_type_set_30_str(self):
         data = ''
         for home in list(self.applyhometype_set.all()):
-            tmp = str(round(home.price / 10000, 1)) + '억'
-            name = ''
-            tmp1 = home.name.replace(' ', '')
-            for index in range(len(tmp1), 1, -1):
-                try:
-                    name = float(tmp1[:index])
-                    break
-                except:
-                    pass
-            if int(name * 0.3025) >= 30 and int(name * 0.3025) < 40:
-                data += '[%s평/%s형] %s<br/>' % (int(name * 0.3025), home.name, tmp)
+            if home.price is not None:
+                tmp = str(round(home.price / 10000, 1)) + '억'
+                name = ''
+                tmp1 = home.name.replace(' ', '')
+                for index in range(len(tmp1), 1, -1):
+                    try:
+                        name = float(tmp1[:index])
+                        break
+                    except:
+                        pass
+                if int(name * 0.3025) >= 30 and int(name * 0.3025) < 40:
+                    data += '[%s평/%s형] %s<br/>' % (int(name * 0.3025), home.name, tmp)
         return mark_safe('<pre>' + data + '</pre>')
 
     @staticmethod
     def apply_home_type_set_big_str(self):
         data = ''
         for home in list(self.applyhometype_set.all()):
-            tmp = str(round(home.price / 10000, 1)) + '억'
-            name = ''
-            tmp1 = home.name.replace(' ', '')
-            for index in range(len(tmp1), 1, -1):
-                try:
-                    name = float(tmp1[:index])
-                    break
-                except:
-                    pass
-            if int(name * 0.3025) >= 40:
-                data += '[%s평/%s형] %s<br/>' % (int(name * 0.3025), home.name, tmp)
+            if home.price is not None:
+                tmp = str(round(home.price / 10000, 1)) + '억'
+                name = ''
+                tmp1 = home.name.replace(' ', '')
+                for index in range(len(tmp1), 1, -1):
+                    try:
+                        name = float(tmp1[:index])
+                        break
+                    except:
+                        pass
+                if int(name * 0.3025) >= 40:
+                    data += '[%s평/%s형] %s<br/>' % (int(name * 0.3025), home.name, tmp)
         return mark_safe('<pre>' + data + '</pre>')

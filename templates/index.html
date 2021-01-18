@@ -1,12 +1,226 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-{% for data in jaon_data %}
-    {{ data }}
-{% endfor %}
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">아파트 청약</h3>
+                    <div class="col-12">
+                        <a href="/proc">
+                            <button type="button" class="btn btn-primary float-right" style="margin-right: 5px;">
+                                <i class="fas fa-download"></i> 크롤링
+                            </button>
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table id="example2" class="table table-bordered table-hover small">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>지역</th>
+                            <th>주택구분</th>
+                            <th>분양/임대</th>
+                            <th>주택명</th>
+                            <th>모집공고일</th>
+                            <th>청약일</th>
+                            <th>10평대</th>
+                            <th>20평대</th>
+                            <th>30평대</th>
+                            <th>대형</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="DescModal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">�</button>
+                    <h3 class="modal-title">Job Requirements & Description</h3>
+
+                </div>
+                <div class="modal-body">
+                    <h5 class="text-center">Hello. Below is the descripton and/or requirements for hiring
+                        consideration.</h5>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default " data-dismiss="modal">Apply!</button>
+                    <button type="button" class="btn btn-primary">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+{% endblock %}
+
+
+{% block js %}
+    {{ block.super }}
+    <!-- jQuery -->
+    <script src="/static/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="/static/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- DataTables  & Plugins -->
+    <script src="/static/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="/static/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="/static/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="/static/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="/static/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="/static/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="/static/plugins/jszip/jszip.min.js"></script>
+    <script src="/static/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="/static/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="/static/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="/static/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="/static/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="/static/dist/js/adminlte.min.js"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="/static/dist/js/demo.js"></script>
+
+    <script type="text/javascript" language="javascript" class="init">
+        $.fn.dataTable.ext.errMode = 'none';
+        $(function () {
+            oTable = $('#example2').dataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+                "ajax": {
+                    "processing": true,
+                    "url": "/api/v1/apply/all",
+                    "dataSrc": ""
+                },
+                columns: [
+                    {"data": "id"},
+                    {"data": "site"},
+                    {"data": "type1"},
+                    {"data": "type2"},
+                    {
+                        "render": function (data, type, row, meta) {
+                            if (type === 'display') {
+                                data = row.name + '<br/>(' + row.address + ')';
+                                return data;
+                            }
+                        }
+                    },
+                    {"data": "publish_date"},
+                    {
+                        "render": function (data, type, row, meta) {
+                            if (type === 'display') {
+                                data = '';
+                                if (row.vote_tk !== null)
+                                    data += '<li> 특공: ' + row.vote_tk + '</li>';
+                                if (row.vote_1 !== null)
+                                    data += '<li> 1순위: ' + row.vote_1 + '</li>';
+                                if (row.vote_2 !== null)
+                                    data += '<li> 2순위: ' + row.vote_2 + '</li>';
+                                return '<ul>' + data + '</ul>';
+                            }
+                        }
+                    },
+                    {
+                        "render": function (data, type, row, meta) {
+                            if (type === 'display') {
+                                data = '';
+                                for (var i = 0; i < row.applyhometype_set.length; i++) {
+                                    var name = row.applyhometype_set[i].name.replaceAll(' ', '');
+                                    var pyung = parseInt(parseFloat(name) * 0.3025);
+                                    if (pyung < 20) {
+                                        var price = (row.applyhometype_set[i].price / 10000).toFixed(1);
+                                        if (price == 0) {
+                                            data += '<li>' + pyung + '평/' + name + '형</li>';
+                                        } else {
+                                            data += '<li>' + pyung + '평/' + name + '형: ' + price + '억</li>'
+                                        }
+                                    }
+                                }
+                                return '<ul>' + data + '</ul>';
+                            }
+                        }
+                    },
+                    {
+                        "render": function (data, type, row, meta) {
+                            if (type === 'display') {
+                                data = '';
+                                for (var i = 0; i < row.applyhometype_set.length; i++) {
+                                    var name = row.applyhometype_set[i].name.replaceAll(' ', '');
+                                    var pyung = parseInt(parseFloat(name) * 0.3025);
+                                    if (20 <= pyung && pyung < 30) {
+                                        var price = (row.applyhometype_set[i].price / 10000).toFixed(1);
+                                        if (price == 0) {
+                                            data += '<li>' + pyung + '평/' + name + '형</li>';
+                                        } else {
+                                            data += '<li>' + pyung + '평/' + name + '형: ' + price + '억</li>'
+                                        }
+                                    }
+                                }
+                                return '<ul>' + data + '</ul>';
+                            }
+                        }
+                    },
+                    {
+                        "render": function (data, type, row, meta) {
+                            if (type === 'display') {
+                                data = '';
+                                for (var i = 0; i < row.applyhometype_set.length; i++) {
+                                    var name = row.applyhometype_set[i].name.replaceAll(' ', '');
+                                    var pyung = parseInt(parseFloat(name) * 0.3025);
+                                    if (30 <= pyung && pyung < 40) {
+                                        var price = (row.applyhometype_set[i].price / 10000).toFixed(1);
+                                        if (price == 0) {
+                                            data += '<li>' + pyung + '평/' + name + '형</li>';
+                                        } else {
+                                            data += '<li>' + pyung + '평/' + name + '형: ' + price + '억</li>'
+                                        }
+                                    }
+                                }
+                                return '<ul>' + data + '</ul>';
+                            }
+                        }
+                    },
+                    {
+                        "render": function (data, type, row, meta) {
+                            if (type === 'display') {
+                                data = '';
+                                for (var i = 0; i < row.applyhometype_set.length; i++) {
+                                    var name = row.applyhometype_set[i].name.replaceAll(' ', '');
+                                    var pyung = parseInt(parseFloat(name) * 0.3025);
+                                    if (40 <= pyung) {
+                                        var price = (row.applyhometype_set[i].price / 10000).toFixed(1);
+                                        if (price == 0) {
+                                            data += '<li>' + pyung + '평/' + name + '형</li>';
+                                        } else {
+                                            data += '<li>' + pyung + '평/' + name + '형: ' + price + '억</li>'
+                                        }
+                                    }
+                                }
+                                return '<ul>' + data + '</ul>';
+                            }
+                        }
+                    },
+                    {
+                        "render": function (data, type, row, meta) {
+                            if (type === 'display') {
+                                return '<a href="' + row.url + '">url</a>';
+                            }
+                        }
+                    },
+                ],
+            });
+        });
+    </script>
+{% endblock %}
